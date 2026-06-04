@@ -257,15 +257,32 @@
         if (finalEl) finalEl.textContent = fullTranscript() + ' ';
         if (interimEl) interimEl.textContent = interimText;
         if (textArea) textArea.scrollTop = textArea.scrollHeight;
+        /* Success — reset network retry counter */
+        networkRetries = 0;
+        if (dot) { dot.style.background = ''; dot.classList.add('active'); }
+        if (statusText) statusText.textContent = 'Listening...';
       };
+
+      var networkRetries = 0;
+      var MAX_RETRIES = 5;
 
       recognition.onerror = function (event) {
         if (event.error === 'not-allowed') {
           SB.showToast('Microphone access denied — please allow mic in browser settings', 'error');
           if (statusText) statusText.textContent = 'Mic blocked';
           if (dot) { dot.classList.remove('active'); dot.style.background = 'var(--color-alert)'; }
+          manualStop = true; // don't auto-restart
         } else if (event.error === 'network') {
-          SB.showToast('Network error — speech recognition needs internet', 'warning');
+          networkRetries++;
+          if (networkRetries <= MAX_RETRIES) {
+            if (statusText) statusText.textContent = 'Reconnecting... (' + networkRetries + '/' + MAX_RETRIES + ')';
+            if (dot) { dot.classList.remove('active'); dot.style.background = 'var(--color-warning)'; }
+            // Will auto-restart via onend
+          } else {
+            SB.showToast('Cannot connect to speech service. Check your internet connection.', 'warning');
+            if (statusText) statusText.textContent = 'Offline';
+            manualStop = true;
+          }
         } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
           SB.showToast('Recognition error: ' + event.error, 'error');
         }
@@ -273,8 +290,9 @@
 
       recognition.onend = function () {
         isRecognizing = false;
-        /* Quick auto-restart with tiny buffer so browser can release mic */
+        /* Auto-restart unless manually stopped or paused */
         if (!manualStop && !isPaused) {
+          var delay = networkRetries > 0 ? Math.min(networkRetries * 500, 2000) : 50;
           setTimeout(function() {
             if (manualStop || isPaused) return;
             try {
@@ -294,7 +312,7 @@
                 recognition.start();
               } catch (_) { /* give up */ }
             }
-          }, 50);
+          }, delay);
         }
       };
       /* Store handlers so we can re-bind on fresh instance */
