@@ -119,13 +119,22 @@
     title: '',
     showHeader: false,
     showNav: false,
-    html: function() {
+    html: function(params) {
+      var emoji = '';
+      var text = '';
+      if (params && params.id) {
+        var card = SB.Storage.getCards().find(function(c) { return c.id === params.id; });
+        if (card) {
+          emoji = card.emoji;
+          text = card.text;
+        }
+      }
       return `
         <style>
           .reply-display-screen {
             background-color: #FFFFFF !important;
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -133,6 +142,7 @@
             padding: var(--space-2xl);
             text-align: center;
             cursor: pointer;
+            position: relative;
           }
           .reply-display-emoji {
             font-size: 80px;
@@ -151,30 +161,27 @@
             top: 24px;
             right: 24px;
             color: #9AA5B4;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 10;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
         </style>
-        <div id="reply-display-container" class="reply-display-screen">
+        <div class="reply-display-screen">
           <span class="material-symbols-rounded reply-display-close">close</span>
-          <div id="reply-display-emoji" class="reply-display-emoji animate-scale-in"></div>
-          <div id="reply-display-text" class="reply-display-text animate-fade-in-up delay-1"></div>
+          <div class="reply-display-emoji animate-scale-in">${emoji}</div>
+          <div class="reply-display-text animate-fade-in-up delay-1">${text}</div>
         </div>
       `;
     },
     onShow: function(params) {
-      if (!params || !params.id) {
-        SB.back();
-        return;
-      }
-      const card = SB.Storage.getCards().find(c => c.id === params.id);
-      if (!card) {
-        SB.back();
-        return;
-      }
-      
-      document.getElementById('reply-display-emoji').textContent = card.emoji;
-      document.getElementById('reply-display-text').textContent = card.text;
-      
-      document.getElementById('reply-display-container').addEventListener('click', () => {
+      var screen = SB._currentScreenEl;
+      if (!screen) return;
+      screen.addEventListener('click', function() {
         SB.back();
       });
     }

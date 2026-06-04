@@ -61,15 +61,18 @@
         try { curConfig.onHide(); } catch(e) { console.error('[SB] onHide error:', e); }
       }
       const curEl = _elements[_current];
+      const oldKey = _current;
       curEl.classList.remove('screen-active');
       curEl.classList.add(_isBack ? 'screen-exit-right' : 'screen-exit');
-      curEl.removeAttribute('id'); // Prevent ID collision with the incoming screen
-      
+      /* Remove all IDs from old screen and its children to prevent ID collisions */
+      curEl.removeAttribute('id');
+      curEl.querySelectorAll('[id]').forEach(function(child) { child.removeAttribute('id'); });
+      delete _elements[oldKey];
       setTimeout(() => {
         if (curEl && curEl.parentNode) {
           curEl.parentNode.removeChild(curEl);
         }
-      }, 380);
+      }, 400);
     }
 
     /* Push history */
@@ -96,6 +99,9 @@
 
     container.appendChild(el);
     _elements[screenId] = el;
+
+    /* Store reference so onShow can scope queries */
+    SB._currentScreenEl = el;
 
     /* Animate in */
     requestAnimationFrame(() => {
