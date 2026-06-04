@@ -151,7 +151,6 @@
           }
           .dash-card-icon .material-symbols-rounded {
             font-size: 1.5rem;
-            color: #fff;
           }
 
           .dash-card-body {
@@ -218,7 +217,7 @@
             ${MODULE_CARDS.map((card, i) => `
               <div class="dash-card dash-fade-up dash-delay-${i + 1}" data-screen="${card.screen}">
                 <div class="dash-card-icon" style="background: ${card.gradient};">
-                  <span class="material-symbols-rounded">${card.icon}</span>
+                  <span class="material-symbols-rounded" style="color: ${card.color};">${card.icon}</span>
                 </div>
                 <div class="dash-card-body">
                   <div class="dash-card-title">${card.title}</div>
