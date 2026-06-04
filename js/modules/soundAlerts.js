@@ -118,7 +118,19 @@
 
       /* ---- test alert ---- */
       document.getElementById('alertTestBtn').addEventListener('click', () => {
-        SB.navigate('screen-alert-active', { type: 'doorbell', label: 'Doorbell Detected', icon: 'doorbell' });
+        const currentSettings = SB.Storage.getAlertSettings() || {};
+        const enabledKeys = ALERT_ORDER.filter(key => currentSettings[key]);
+        if (enabledKeys.length === 0) {
+          SB.showToast('Enable at least one alert to test', 'warning');
+          return;
+        }
+        const randomKey = enabledKeys[Math.floor(Math.random() * enabledKeys.length)];
+        const alertInfo = ALERT_TYPES[randomKey];
+        SB.navigate('screen-alert-active', {
+          type: randomKey,
+          label: alertInfo.label + ' Detected',
+          icon: alertInfo.icon
+        });
       });
 
       /* ---- history ---- */
