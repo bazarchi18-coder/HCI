@@ -155,6 +155,7 @@
             color: #1A1A2E !important;
             line-height: 1.2;
             word-break: break-word;
+            margin-bottom: var(--space-2xl);
           }
           .reply-display-close {
             position: absolute;
@@ -170,20 +171,119 @@
             align-items: center;
             justify-content: center;
           }
+          .reply-announce-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #1A6B8A 0%, #2E86AB 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(26, 107, 138, 0.3);
+            transition: all 0.2s ease;
+            min-height: 48px;
+          }
+          .reply-announce-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 24px rgba(26, 107, 138, 0.4);
+          }
+          .reply-announce-btn:active {
+            transform: scale(0.97);
+          }
+          .reply-announce-btn .material-symbols-rounded {
+            font-size: 22px;
+          }
+          .reply-announce-btn.speaking {
+            background: linear-gradient(135deg, #2DC653 0%, #5DD97B 100%);
+            box-shadow: 0 4px 16px rgba(45, 198, 83, 0.3);
+          }
+          @keyframes speakerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+          }
+          .reply-announce-btn.speaking .material-symbols-rounded {
+            animation: speakerPulse 0.8s ease infinite;
+          }
         </style>
-        <div class="reply-display-screen">
+        <div class="reply-display-screen" data-card-text="${text.replace(/"/g, '&quot;')}">
           <span class="material-symbols-rounded reply-display-close">close</span>
           <div class="reply-display-emoji animate-scale-in">${emoji}</div>
           <div class="reply-display-text animate-fade-in-up delay-1">${text}</div>
+          <button class="reply-announce-btn animate-fade-in-up delay-2">
+            <span class="material-symbols-rounded">volume_up</span>
+            Announce
+          </button>
         </div>
       `;
     },
     onShow: function(params) {
       var screen = SB._currentScreenEl;
       if (!screen) return;
-      screen.addEventListener('click', function() {
+
+      var displayDiv = screen.querySelector('.reply-display-screen');
+      var cardText = displayDiv ? displayDiv.dataset.cardText : '';
+      var announceBtn = screen.querySelector('.reply-announce-btn');
+
+      /* ── Text-to-Speech helper ── */
+      function speakText(text) {
+        if (!('speechSynthesis' in window)) {
+          SB.showToast('Speech not supported in this browser', 'warning');
+          return;
+        }
+        window.speechSynthesis.cancel(); // stop any current speech
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        utterance.lang = 'en-US';
+
+        if (announceBtn) {
+          announceBtn.classList.add('speaking');
+          announceBtn.querySelector('.material-symbols-rounded').textContent = 'graphic_eq';
+          announceBtn.querySelector('.material-symbols-rounded').nextSibling.textContent = ' Speaking...';
+        }
+
+        utterance.onend = function() {
+          if (announceBtn) {
+            announceBtn.classList.remove('speaking');
+            announceBtn.querySelector('.material-symbols-rounded').textContent = 'volume_up';
+            announceBtn.querySelector('.material-symbols-rounded').nextSibling.textContent = ' Announce';
+          }
+        };
+        utterance.onerror = utterance.onend;
+
+        window.speechSynthesis.speak(utterance);
+      }
+
+      /* Auto-announce on open */
+      if (cardText) {
+        setTimeout(function() { speakText(cardText); }, 400);
+      }
+
+      /* Replay button */
+      if (announceBtn) {
+        announceBtn.addEventListener('click', function(e) {
+          e.stopPropagation(); // don't close the screen
+          speakText(cardText);
+        });
+      }
+
+      /* Close on background tap (but not on the announce button) */
+      screen.addEventListener('click', function(e) {
+        if (e.target.closest('.reply-announce-btn')) return;
+        window.speechSynthesis.cancel();
         SB.back();
       });
+    },
+    onHide: function() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     }
   });
 
