@@ -63,11 +63,11 @@
       const curEl = _elements[_current];
       curEl.classList.remove('screen-active');
       curEl.classList.add(_isBack ? 'screen-exit-right' : 'screen-exit');
-      const oldId = _current;
+      curEl.removeAttribute('id'); // Prevent ID collision with the incoming screen
+      
       setTimeout(() => {
-        if (_elements[oldId]) {
-          _elements[oldId].remove();
-          delete _elements[oldId];
+        if (curEl && curEl.parentNode) {
+          curEl.parentNode.removeChild(curEl);
         }
       }, 380);
     }
