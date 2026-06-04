@@ -210,7 +210,6 @@
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
       if (!SpeechRecognition) {
-        /* Show a clear helpful message */
         SB.showToast('Speech recognition not supported in this browser', 'warning');
         if (placeholder) {
           placeholder.innerHTML = '⚠️ Speech recognition is not available.<br><br>' +
@@ -225,104 +224,66 @@
         return;
       }
 
-      /* Request microphone first, then start recognition */
-      function startRecognition() {
-        recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-        recognition.maxAlternatives = 1;
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      recognition.maxAlternatives = 1;
 
-        recognition.onstart = function() {
-          isRecognizing = true;
-          if (dot) { dot.classList.add('active'); dot.classList.remove('paused'); }
-          if (statusText) statusText.textContent = 'Listening...';
-        };
+      recognition.onstart = function() {
+        isRecognizing = true;
+        if (dot) { dot.classList.add('active'); dot.classList.remove('paused'); }
+        if (statusText) statusText.textContent = 'Listening...';
+      };
 
-        recognition.onresult = function (event) {
-          let interimPart = '';
-          let finalPart = '';
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            var t = event.results[i][0].transcript;
-            if (event.results[i].isFinal) {
-              finalPart += t + ' ';
-            } else {
-              interimPart += t;
-            }
+      recognition.onresult = function (event) {
+        let interimPart = '';
+        let finalPart = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          var t = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalPart += t + ' ';
+          } else {
+            interimPart += t;
           }
-          if (finalPart) {
-            transcriptParts.push(finalPart.trim());
-          }
-          interimText = interimPart;
-
-          /* render */
-          if (placeholder) placeholder.style.display = 'none';
-          if (finalEl) finalEl.textContent = fullTranscript() + ' ';
-          if (interimEl) interimEl.textContent = interimText;
-
-          /* auto-scroll */
-          if (textArea) textArea.scrollTop = textArea.scrollHeight;
-        };
-
-        recognition.onerror = function (event) {
-          console.log('[SB Caption] Recognition error:', event.error);
-          if (event.error === 'not-allowed') {
-            SB.showToast('Microphone access denied. Please allow microphone in your browser settings.', 'error');
-            if (statusText) statusText.textContent = 'Mic blocked';
-            if (dot) { dot.classList.remove('active'); dot.style.background = 'var(--color-alert)'; }
-          } else if (event.error === 'network') {
-            SB.showToast('Network error — speech recognition requires an internet connection', 'warning');
-          } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
-            SB.showToast('Recognition error: ' + event.error, 'error');
-          }
-        };
-
-        recognition.onend = function () {
-          isRecognizing = false;
-          /* Auto-restart unless manually stopped or paused */
-          if (!manualStop && !isPaused) {
-            try {
-              setTimeout(function() {
-                if (!manualStop && !isPaused) {
-                  recognition.start();
-                }
-              }, 200);
-            } catch (_) { /* */ }
-          }
-        };
-
-        /* start */
-        try {
-          recognition.start();
-        } catch (e) {
-          console.error('[SB Caption] Start error:', e);
-          SB.showToast('Could not start recognition: ' + e.message, 'error');
         }
-      }
+        if (finalPart) {
+          transcriptParts.push(finalPart.trim());
+        }
+        interimText = interimPart;
 
-      /* Try to get mic permission first for better UX */
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-          .then(function(stream) {
-            /* Got permission — stop the stream (recognition manages its own) */
-            stream.getTracks().forEach(function(track) { track.stop(); });
-            startRecognition();
-          })
-          .catch(function(err) {
-            console.error('[SB Caption] Mic permission error:', err);
-            SB.showToast('Microphone access is required for live captions', 'error');
-            if (placeholder) {
-              placeholder.innerHTML = '🎤 Microphone access required<br><br>' +
-                '<span style="font-size:14px;font-style:normal;color:var(--color-text-secondary);">' +
-                'Please allow microphone access in your browser and try again.</span>';
-              placeholder.style.fontStyle = 'normal';
-            }
-            if (dot) { dot.classList.remove('active'); dot.style.background = 'var(--color-alert)'; }
-            if (statusText) statusText.textContent = 'Mic blocked';
-          });
-      } else {
-        /* Fallback: just try starting directly */
-        startRecognition();
+        /* render immediately */
+        if (placeholder) placeholder.style.display = 'none';
+        if (finalEl) finalEl.textContent = fullTranscript() + ' ';
+        if (interimEl) interimEl.textContent = interimText;
+        if (textArea) textArea.scrollTop = textArea.scrollHeight;
+      };
+
+      recognition.onerror = function (event) {
+        if (event.error === 'not-allowed') {
+          SB.showToast('Microphone access denied — please allow mic in browser settings', 'error');
+          if (statusText) statusText.textContent = 'Mic blocked';
+          if (dot) { dot.classList.remove('active'); dot.style.background = 'var(--color-alert)'; }
+        } else if (event.error === 'network') {
+          SB.showToast('Network error — speech recognition needs internet', 'warning');
+        } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
+          SB.showToast('Recognition error: ' + event.error, 'error');
+        }
+      };
+
+      recognition.onend = function () {
+        isRecognizing = false;
+        /* Instant auto-restart — no delay */
+        if (!manualStop && !isPaused) {
+          try { recognition.start(); } catch (_) { /* */ }
+        }
+      };
+
+      /* Start immediately — no getUserMedia pre-check overhead */
+      try {
+        recognition.start();
+      } catch (e) {
+        SB.showToast('Could not start: ' + e.message, 'error');
       }
 
       /* ---- Pause / Resume ---- */
