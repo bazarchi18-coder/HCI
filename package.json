@@ -1,0 +1,13 @@
+{
+  "name": "soundbridge",
+  "version": "1.0.0",
+  "description": "SoundBridge — Communication & Accessibility App for People with Partial Hearing Loss",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

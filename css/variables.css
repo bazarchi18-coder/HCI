@@ -1,0 +1,202 @@
+/* ===================================================
+   SoundBridge — Design Tokens & Theme System
+   =================================================== */
+
+:root {
+  /* ── Primary Palette ── */
+  --color-primary: #1A6B8A;
+  --color-primary-light: #2E86AB;
+  --color-primary-dark: #145A75;
+  --color-primary-rgb: 26, 107, 138;
+
+  --color-secondary: #2E86AB;
+  --color-secondary-light: #4DA3C4;
+  --color-secondary-rgb: 46, 134, 171;
+
+  /* ── Semantic Colors ── */
+  --color-alert: #E63946;
+  --color-alert-light: #FF6B7A;
+  --color-alert-rgb: 230, 57, 70;
+
+  --color-success: #2DC653;
+  --color-success-light: #5DD97B;
+  --color-success-rgb: 45, 198, 83;
+
+  --color-warning: #F7B731;
+  --color-warning-light: #FFCF5C;
+  --color-warning-rgb: 247, 183, 49;
+
+  --color-purple: #8B5CF6;
+  --color-purple-rgb: 139, 92, 246;
+
+  /* ── Surface & Background ── */
+  --color-bg: #F5F7FA;
+  --color-bg-pure: #FFFFFF;
+  --color-bg-secondary: #EDF1F7;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #FFFFFF;
+  --color-surface-glass: rgba(255, 255, 255, 0.72);
+
+  /* ── Text ── */
+  --color-text: #1A1A2E;
+  --color-text-secondary: #5A6578;
+  --color-text-tertiary: #9AA5B4;
+  --color-text-inverse: #FFFFFF;
+
+  /* ── Borders & Dividers ── */
+  --color-border: #E2E8F0;
+  --color-divider: #EDF2F7;
+
+  /* ── Gradients ── */
+  --gradient-primary: linear-gradient(135deg, #1A6B8A 0%, #2E86AB 100%);
+  --gradient-hero: linear-gradient(135deg, #0F4C5C 0%, #1A6B8A 40%, #2E86AB 100%);
+  --gradient-splash: linear-gradient(160deg, #0A3D5C 0%, #1A6B8A 35%, #2E86AB 65%, #4DA3C4 100%);
+  --gradient-alert: linear-gradient(135deg, #E63946 0%, #FF6B7A 100%);
+  --gradient-success: linear-gradient(135deg, #2DC653 0%, #5DD97B 100%);
+  --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+  --gradient-warm: linear-gradient(135deg, #F7B731 0%, #FFCF5C 100%);
+  --gradient-card-1: linear-gradient(135deg, rgba(26,107,138,0.08) 0%, rgba(46,134,171,0.04) 100%);
+  --gradient-card-2: linear-gradient(135deg, rgba(46,134,171,0.08) 0%, rgba(77,163,196,0.04) 100%);
+  --gradient-card-3: linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(167,139,250,0.04) 100%);
+  --gradient-card-4: linear-gradient(135deg, rgba(45,198,83,0.08) 0%, rgba(93,217,123,0.04) 100%);
+  --gradient-card-5: linear-gradient(135deg, rgba(247,183,49,0.08) 0%, rgba(255,207,92,0.04) 100%);
+
+  /* ── Typography ── */
+  --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.75rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 2.5rem;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.75;
+
+  /* ── Spacing Scale ── */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-base: 16px;
+  --space-lg: 20px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 40px;
+  --space-4xl: 48px;
+  --space-5xl: 64px;
+
+  /* ── Border Radius ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 24px rgba(26, 107, 138, 0.25);
+  --shadow-glow-alert: 0 0 24px rgba(230, 57, 70, 0.3);
+  --shadow-inner: inset 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  /* ── Transitions ── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: 150ms var(--ease-out);
+  --transition-base: 250ms var(--ease-out);
+  --transition-slow: 350ms var(--ease-out);
+  --transition-screen: 320ms var(--ease-out);
+
+  /* ── Z-Index ── */
+  --z-base: 1;
+  --z-sticky: 50;
+  --z-header: 100;
+  --z-nav: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-splash: 500;
+
+  /* ── Layout ── */
+  --header-height: 56px;
+  --nav-height: 64px;
+  --touch-min: 48px;
+  --app-max-width: 430px;
+  --screen-padding: 20px;
+}
+
+/* ===================================================
+   Dark Theme
+   =================================================== */
+[data-theme="dark"] {
+  --color-bg: #0D1B2A;
+  --color-bg-pure: #0D1B2A;
+  --color-bg-secondary: #152238;
+  --color-surface: #1B2D45;
+  --color-surface-elevated: #243B55;
+  --color-surface-glass: rgba(27, 45, 69, 0.8);
+
+  --color-text: #E8EDF4;
+  --color-text-secondary: #9AAFC4;
+  --color-text-tertiary: #5E7A94;
+
+  --color-border: #2A3F55;
+  --color-divider: #1E3348;
+
+  --gradient-card-1: linear-gradient(135deg, rgba(26,107,138,0.15) 0%, rgba(46,134,171,0.06) 100%);
+  --gradient-card-2: linear-gradient(135deg, rgba(46,134,171,0.15) 0%, rgba(77,163,196,0.06) 100%);
+  --gradient-card-3: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(167,139,250,0.06) 100%);
+  --gradient-card-4: linear-gradient(135deg, rgba(45,198,83,0.15) 0%, rgba(93,217,123,0.06) 100%);
+  --gradient-card-5: linear-gradient(135deg, rgba(247,183,49,0.15) 0%, rgba(255,207,92,0.06) 100%);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+/* ===================================================
+   High Contrast Mode
+   =================================================== */
+[data-contrast="high"] {
+  --color-text: #000000;
+  --color-bg: #FFFFFF;
+  --color-bg-pure: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-primary: #0D4F6B;
+  --color-border: #333333;
+  --color-divider: #666666;
+  --color-text-secondary: #333333;
+}
+
+[data-theme="dark"][data-contrast="high"] {
+  --color-text: #FFFFFF;
+  --color-bg: #000000;
+  --color-bg-pure: #000000;
+  --color-surface: #111111;
+  --color-border: #CCCCCC;
+  --color-divider: #666666;
+  --color-text-secondary: #DDDDDD;
+}
+
+/* ===================================================
+   Font Scale
+   =================================================== */
+[data-font-scale="small"] { font-size: 14px; }
+[data-font-scale="normal"] { font-size: 16px; }
+[data-font-scale="large"] { font-size: 18px; }
+[data-font-scale="xl"] { font-size: 20px; }
