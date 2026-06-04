@@ -273,11 +273,35 @@
 
       recognition.onend = function () {
         isRecognizing = false;
-        /* Instant auto-restart — no delay */
+        /* Quick auto-restart with tiny buffer so browser can release mic */
         if (!manualStop && !isPaused) {
-          try { recognition.start(); } catch (_) { /* */ }
+          setTimeout(function() {
+            if (manualStop || isPaused) return;
+            try {
+              recognition.start();
+            } catch (e) {
+              /* If start fails, create a fresh instance and retry */
+              try {
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                recognition.maxAlternatives = 1;
+                recognition.onstart = handleStart;
+                recognition.onresult = handleResult;
+                recognition.onerror = handleError;
+                recognition.onend = handleEnd;
+                recognition.start();
+              } catch (_) { /* give up */ }
+            }
+          }, 50);
         }
       };
+      /* Store handlers so we can re-bind on fresh instance */
+      var handleStart = recognition.onstart;
+      var handleResult = recognition.onresult;
+      var handleError = recognition.onerror;
+      var handleEnd = recognition.onend;
 
       /* Start immediately — no getUserMedia pre-check overhead */
       try {
